@@ -1,0 +1,49 @@
+% 初期化
+closest_points = zeros(size(observed_points));
+ra = zeros(size(observed_points, 1), 1);
+Score = 1000;  
+
+% 各観測点に対して処理
+for m = 1:length(X)
+    x_obs = X(m);
+    y_obs = Y(m);
+
+    % 距離行列の計算
+    dist_matrix = sqrt((x_matrix - x_obs).^2 + (y_matrix - y_obs).^2);
+
+    % 最近点の距離とインデックスを取得
+    [min_distance, min_index] = min(dist_matrix(:));
+
+    % 距離が50を超えた場合、ループを終了しscoreをinfに設定
+    if min_distance > 50
+        Score = inf;
+        break;
+    end
+
+    [layer_idx, point_idx] = ind2sub(size(dist_matrix), min_index);
+    nearest_point = [x_matrix(layer_idx, point_idx), y_matrix(layer_idx, point_idx)];
+
+    % 同じ層の点から傾き（角度）を計算
+    X_layer = x_matrix(layer_idx, :);
+    Y_layer = y_matrix(layer_idx, :);
+
+    if point_idx == 1
+        ra_value = atan((Y_layer(2) - Y_layer(1)) / (X_layer(2) - X_layer(1)));
+    elseif point_idx == length(X_layer)
+        ra_value = atan((Y_layer(end) - Y_layer(end-1)) / (X_layer(end) - X_layer(end-1)));
+    else
+        ra_value = atan((Y_layer(point_idx+1) - Y_layer(point_idx-1)) / (X_layer(point_idx+1) - X_layer(point_idx-1)));
+    end
+
+    % 結果を格納
+    closest_points(m, :) = nearest_point;
+    ra(m) = ra_value;
+end
+
+% 距離条件を満たす場合のみスコアを計算
+if Score ~= inf
+    Score = norm(RA - ra,1);
+    Count=Count+1;
+
+    SCORE=cat(2,SCORE,Score);
+end
