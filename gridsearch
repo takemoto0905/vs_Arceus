@@ -1,0 +1,60 @@
+preparation;
+SCORE=[]; 
+cpoints=zeros(size(observed_points));
+
+for n = 1:size(param_comb, 1)
+%for n=1:10000
+
+    if mod(n, 100000) == 0
+
+        disp(['現在のループ: ', num2str(n), '回目']);
+
+        disp('最適パラメータセット [a b ps phis phif xo]=');
+        disp(best_param);
+
+        disp('best_score=');
+        disp(best_score);
+
+        disp('有効なパラメータセット数=');
+        disp(Count);
+
+    end
+
+    param_set = param_comb(n, :);
+    a = param_set(1);
+    b = param_set(2);
+    ps = param_set(3);
+    phis = param_set(4);
+    phif = param_set(5);
+    xo = param_set(6);
+    
+    pointset;
+    layersmoving;
+    searchingpoints;
+
+    [best_score, best_param,cpoints] = evaluation(Score, param_set, best_score, best_param,closest_points,cpoints);
+
+end
+
+disp('探索終了');
+
+disp('有効なパラメータセット数=');
+disp(Count);
+
+disp('最近接点');
+disp(cpoints)
+
+R=best_score/12;
+R=R*180/pi;
+
+disp('best_score=');
+disp(best_score);
+
+disp(' (誤差平均) =');
+disp([num2str(R), '°']);
+
+disp('最適パラメータセット (a, b,  ps, phis, phif, xo) =');
+disp(best_param);
+
+save 'best_parameter' best_param;
+plot(SCORE);
