@@ -1,0 +1,11 @@
+function [best_score,best_param, cpoints]=evaluation(Score, param_set, best_score, best_param, closest_points, cpoints)
+    
+    if Score<best_score
+    best_score=Score;
+    best_param=param_set;
+
+    cpoints=closest_points;
+    
+    end
+
+end
