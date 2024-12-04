@@ -1,0 +1,89 @@
+clear all;
+
+a = 50;
+b = 12;
+ps = 2.2;
+phis = 8;
+phif = 63;
+xo = 2800;
+
+% パラメータの設定
+a = a * pi / 180;
+b = b * pi / 180;
+ramp = ramp * pi / 180;
+phif = phif * pi / 180;
+phi=0
+
+time_steps = 100;
+yo = xo * tan(pi / 2 - ramp);
+R = norm([xo, yo]);
+displacement = R * phif/ps;
+
+xf = xo;
+yf = yo - R;
+v = displacement / time_steps;
+vx = -v;
+vy = 0;
+
+pointset;
+
+% 観測点の読み込み
+load 'observed1.txt';
+X = observed1(:, 1);
+Y = observed1(:, 2);
+observed_points = [X, Y];
+
+% アニメーションの作成
+figure;
+hold on;
+axis equal;
+grid on;
+xlabel('X軸(m)');
+ylabel('Y軸(m)');
+title('Trishear listric model');
+
+% 観測点をプロット
+plot(X, Y, 'k.', 'MarkerSize', 10);
+
+trajectoryxf = zeros(1, time_steps);
+trajectoryyf = zeros(1, time_steps);
+
+for t = 1:time_steps
+    dist_matrix = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+    cond1 = y_matrix <= -tan(ramp - b) .* (x_matrix - xf) + yf & dist_matrix > R;
+    cond2 = y_matrix < -tan(ramp + a) .* (x_matrix - xf) + yf & y_matrix > -tan(ramp - b) .* (x_matrix - xf) + yf;
+    cond3 = ~cond1 & ~cond2;
+
+    u = -(yf - y_matrix(cond2)) ./ (xf - x_matrix(cond2));
+    w = ramp - atan(u);
+    x_matrix(cond2) = x_matrix(cond2) + vx * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+    y_matrix(cond2) = y_matrix(cond2) + vy * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond3) = x_matrix(cond3) + vx;
+    y_matrix(cond3) = y_matrix(cond3) + vy;
+
+    xf = xf + ps * vx;
+    yf = yf + ps * vy;
+    phi = phi + v*ps / R;
+    vx = -v * cos(phi);
+    vy = v * sin(phi);
+
+    trajectoryxf(t) = xf;
+    trajectoryyf(t) = yf;
+
+    % 動的な更新部分
+    cla;
+    plot(X, Y, 'k.', 'MarkerSize', 10); % 観測点を再描画
+    plot(x_matrix, y_matrix, 'b.'); % 層の位置を描画
+    plot(xf, yf, 'ro', 'MarkerSize', 8); % 断層の先端を描画
+    plot(trajectoryxf(1:t), trajectoryyf(1:t), 'r', 'LineWidth', 1.5); % 断層先端の軌跡を描画
+
+    % アニメーションを更新
+    drawnow;
+end
+
+hold on;
+
+searchingpoints;
+plot(closest_points(:,1),closest_points(:,2),'go');
+hold off;
