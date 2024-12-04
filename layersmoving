@@ -1,0 +1,43 @@
+a=a*pi/180;
+b=b*pi/180;
+phif=phif*pi/180;
+ramp=ramp*pi/180;
+
+yo = xo * tan(pi / 2 - ramp);
+R = norm([xo, yo]);
+displacement=phif*R/ps;
+v=displacement/time_steps;
+phi=0;
+xf = xo;
+yf = yo - R;
+vx = -v * cos(phi);
+vy = v * sin(phi);
+
+for t = 1:time_steps
+    dist_matrixo = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+  
+    cond1 = y_matrix <= -tan(phi - b) .* (x_matrix - xf) + yf & dist_matrixo > R;
+
+    cond2 = y_matrix < -tan(phi + a) .* (x_matrix - xf) + yf & y_matrix > -tan(phi - b) .* (x_matrix - xf) + yf & phi+a < pi/2
+
+    cond3 = y_matrix > -tan(phi + a) .* (x_matrix - xf) + yf & y_matrix > -tan(phi - b) .* (x_matrix - xf) + yf & phi+a > pi/2
+
+    cond4 = ~cond1 & ~cond2 & ~cond3 & ~cond4
+
+    u = -(yf - y_matrix(cond2)) ./ (xf - x_matrix(cond2));
+    w = phi - atan(u);
+    x_matrix(cond2) = x_matrix(cond2) + vx * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+    y_matrix(cond2) = y_matrix(cond2) + vy * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond3) = x_matrix(cond3) + vx * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+    y_matrix(cond3) = y_matrix(cond3) + vy * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond4) = x_matrix(cond4) + vx;
+    y_matrix(cond4) = y_matrix(cond4) + vy;
+
+    xf = xf + ps * vx;
+    yf = yf + ps * vy;
+    phi = phi + v*ps/ R;
+    vx = -v * cos(phi);
+    vy = v * sin(phi);
+end
