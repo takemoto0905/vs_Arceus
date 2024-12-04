@@ -7,10 +7,9 @@ phif = 30:3:70;
 xo = 100:100:4000;
 
 time_steps = 100;
-ramp = 29 * pi / 180;
 
 % パラメータ組み合わせの行列生成
-[P1, P2, P3, P4, P5, P6，P7] = ndgrid(a, b, ps, ramp, phif, xo);
+[P1, P2, P3, P4, P5, P6] = ndgrid(a, b, ps, ramp, phif, xo);
 param_comb = [P1(:), P2(:), P3(:), P4(:), P5(:), P6(:)];
 
 % 観測データの読み込み
