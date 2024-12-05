@@ -9,7 +9,7 @@ for n = 1:size(param_comb, 1)
 
         disp(['現在のループ: ', num2str(n), '回目']);
 
-        disp('最適パラメータセット [a b ps phis phif xo]=');
+        disp('最適パラメータセット [a b ps ramp phif xo]=');
         disp(best_param);
 
         disp('best_score=');
@@ -24,7 +24,7 @@ for n = 1:size(param_comb, 1)
     a = param_set(1);
     b = param_set(2);
     ps = param_set(3);
-    phis = param_set(4);
+    ramp = param_set(4);
     phif = param_set(5);
     xo = param_set(6);
     
@@ -44,14 +44,13 @@ disp(Count);
 disp('最近接点');
 disp(cpoints)
 
-R=best_score/12;
-R=R*180/pi;
+ave=best_score*15/pi;
 
 disp('best_score=');
 disp(best_score);
 
 disp(' (誤差平均) =');
-disp([num2str(R), '°']);
+disp([num2str(ave), '°']);
 
 disp('最適パラメータセット (a, b,  ps, phis, phif, xo) =');
 disp(best_param);
