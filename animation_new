@@ -51,7 +51,7 @@ trajectoryxf = zeros(1, time_steps);
 trajectoryyf = zeros(1, time_steps);
 
 for t = 1:time_steps
-    dist_matrix = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+    dist_matrixo = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
     tan_matrixo = (y_matrix-yf)./(x_matrix-xf);
 
     cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_matrixo > R;
