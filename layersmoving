@@ -16,25 +16,34 @@ vy = v * sin(phi);
 
 for t = 1:time_steps
     dist_matrixo = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+    tan_matrixo = (y_matrix-yf)./(x_matrix-xf);
   
-    cond1 = y_matrix <= -tan(phi - b) .* (x_matrix - xf) + yf & dist_matrixo > R;
+    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_matrixo > R;
 
-    cond2 = y_matrix < -tan(phi + a) .* (x_matrix - xf) + yf & y_matrix > -tan(phi - b) .* (x_matrix - xf) + yf & phi+a < pi/2
+    cond2 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrixo>0;
 
-    cond3 = y_matrix > -tan(phi + a) .* (x_matrix - xf) + yf & y_matrix > -tan(phi - b) .* (x_matrix - xf) + yf & phi+a > pi/2
+    cond3 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrixo<0;
 
-    cond4 = ~cond1 & ~cond2 & ~cond3;
+    cond4 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matirxo>0;
 
-    u = -(yf - y_matrix(cond2)) ./ (xf - x_matrix(cond2));
-    w = phi - atan(u);
-    x_matrix(cond2) = x_matrix(cond2) + vx * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
-    y_matrix(cond2) = y_matrix(cond2) + vy * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matirxo<0;
 
-    x_matrix(cond3) = x_matrix(cond3) + vx * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
-    y_matrix(cond3) = y_matrix(cond3) + vy * ((tan(b) - tan(w)) ./ (tan(b) + tan(a)));
+    cond6 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5;
 
-    x_matrix(cond4) = x_matrix(cond4) + vx;
-    y_matrix(cond4) = y_matrix(cond4) + vy;
+    x_matrix(cond2) = x_matrix(cond2) + vx * ((tan(b) - tan(phi+atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+    y_matrix(cond2) = y_matrix(cond2) + vy * ((tan(b) - tan(phi+atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond3) = x_matrix(cond3) + vx * ((tan(b) - tan(phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+    y_matrix(cond3) = y_matrix(cond3) + vy * ((tan(b) - tan(phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond4) = x_matrix(cond4) + vx * ((tan(b) + tan(pi-phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+    y_matrix(cond4) = y_matrix(cond4) + vy * ((tan(b) + tan(pi-phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond5) = x_matrix(cond5) + vx * ((tan(b) - tan(phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+    y_matrix(cond5) = y_matrix(cond5) + vy * ((tan(b) - tan(phi-atan(tan_matrixo))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond6) = x_matrix(cond6) + vx;
+    y_matrix(cond6) = y_matrix(cond6) + vy;
 
     xf = xf + ps * vx;
     yf = yf + ps * vy;
