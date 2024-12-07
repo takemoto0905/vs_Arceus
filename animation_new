@@ -7,13 +7,11 @@ phis = 8;
 phif = 63;
 xo = 2800;
 
-
-
 a = a * pi / 180;
 b = b * pi / 180;
 ramp = ramp * pi / 180;
 phif = phif * pi / 180;
-phi=0
+phi=0;
 
 time_steps = 100;
 Count=0;
@@ -40,6 +38,7 @@ observed_points = [X, Y];
 figure;
 hold on;
 axis equal;
+axis([-1000 3000 -500 500]);
 grid on;
 xlabel('X軸(m)');
 ylabel('Y軸(m)');
