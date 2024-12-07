@@ -3,7 +3,7 @@ clear all;
 a = 50;
 b = 12;
 ps = 2.2;
-phis = 8;
+ramp=30;
 phif = 63;
 xo = 2800;
 
