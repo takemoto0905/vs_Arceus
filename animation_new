@@ -86,7 +86,7 @@ for t = 1:time_steps
     y_matrix(cond6)=y_matrix(cond6)+vy*(tan(b)+tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b));
 
     x_matrix(cond7)=x_matrix(cond7)-vx*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b));
-    y_matrix(cond7)=y_matrix(cond7)+vy*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))
+    y_matrix(cond7)=y_matrix(cond7)+vy*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b));
 
     x_matrix(cond8)=x_matrix(cond8)-vx*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
     y_matrix(cond8)=y_matrix(cond8)+vy*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
