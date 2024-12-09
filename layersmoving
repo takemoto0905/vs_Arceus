@@ -16,31 +16,36 @@ vy = v * sin(phi);
 
 for t = 1:time_steps
     dist_matrixo = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
-    tan_matrixo = (y_matrix-yf)./(x_matrix-xf);
+    tan_matrix = (y_matrix-yf)./(x_matrix-xf);
+    tan_matrixo = -(x_matrix-xo)./(y_matrix-yo);
   
-    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_matrixo > R;
+    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_matrixo > R　& x_matrix<xo; ％円弧状断層の下, Footwall
 
-    cond2 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrixo>0;
+    cond2 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrix>0;
 
-    cond3 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrixo<0;
+    cond3 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrix<0;
 
-    cond4 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matrixo>0;
+    cond4 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matrix>0;
 
-    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matrixo<0;
+    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a>pi/2 & tan_matrix<0; %cond2~cond5 trishear zone
 
-    cond6 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5;
+    cond6 = x_matrix>xo & y_matrix<yo-R; %平坦断層の下, footwall
 
-    x_matrix(cond2) = x_matrix(cond2) + vx .* ((tan(b) - tan(phi+atan(tan_matrixo(cond2)))) ./ (tan(b) + tan(a)));
-    y_matrix(cond2) = y_matrix(cond2) + vy .* ((tan(b) - tan(phi+atan(tan_matrixo(cond2)))) ./ (tan(b) + tan(a)));
+    cond7 = x_matrix>xo & y_matrix>yo-R & ~cond4; %直線領域剛体運動
 
-    x_matrix(cond3) = x_matrix(cond3) + vx .* ((tan(b) - tan(phi-atan(tan_matrixo(cond3)))) ./ (tan(b) + tan(a)));
-    y_matrix(cond3) = y_matrix(cond3) + vy .* ((tan(b) - tan(phi-atan(tan_matrixo(cond3)))) ./ (tan(b) + tan(a)));
+    cond8 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5 & ~cond6 & ~cond7;
 
-    x_matrix(cond4) = x_matrix(cond4) + vx .* ((tan(b) + tan(pi-phi-atan(tan_matrixo(cond4)))) ./ (tan(b) + tan(a)));
-    y_matrix(cond4) = y_matrix(cond4) + vy .* ((tan(b) + tan(pi-phi-atan(tan_matrixo(cond4)))) ./ (tan(b) + tan(a)));
+    x_matrix(cond2) = x_matrix(cond2) + vx .* ((tan(b) - tan(phi+atan(tan_matrix(cond2)))) ./ (tan(b) + tan(a)));
+    y_matrix(cond2) = y_matrix(cond2) + vy .* ((tan(b) - tan(phi+atan(tan_matrix(cond2)))) ./ (tan(b) + tan(a)));
 
-    x_matrix(cond5) = x_matrix(cond5) + vx .* ((tan(b) - tan(phi-atan(tan_matrixo(cond5)))) ./ (tan(b) + tan(a)));
-    y_matrix(cond5) = y_matrix(cond5) + vy .* ((tan(b) - tan(phi-atan(tan_matrixo(cond5)))) ./ (tan(b) + tan(a)));
+    x_matrix(cond3) = x_matrix(cond3) + vx .* ((tan(b) - tan(phi-atan(tan_matrix(cond3)))) ./ (tan(b) + tan(a)));
+    y_matrix(cond3) = y_matrix(cond3) + vy .* ((tan(b) - tan(phi-atan(tan_matrix(cond3)))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond4) = x_matrix(cond4) + vx .* ((tan(b) + tan(pi-phi-atan(tan_matrix(cond4)))) ./ (tan(b) + tan(a)));
+    y_matrix(cond4) = y_matrix(cond4) + vy .* ((tan(b) + tan(pi-phi-atan(tan_matrix(cond4)))) ./ (tan(b) + tan(a)));
+
+    x_matrix(cond5) = x_matrix(cond5) + vx .* ((tan(b) - tan(phi-atan(tan_matrix(cond5)))) ./ (tan(b) + tan(a)));
+    y_matrix(cond5) = y_matrix(cond5) + vy .* ((tan(b) - tan(phi-atan(tan_matrix(cond5)))) ./ (tan(b) + tan(a)));
 
     x_matrix(cond6) = x_matrix(cond6) + vx;
     y_matrix(cond6) = y_matrix(cond6) + vy;
