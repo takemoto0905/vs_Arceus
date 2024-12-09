@@ -13,31 +13,51 @@ xf = xo;
 yf = yo - R;
 
 for t = 1:time_steps
-    dist_matrixo = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
-    tan_matrix = (y_matrix-yf)./(x_matrix-xf);
-    ang_matrixo = atan(-(x_matrix-xo)./(y_matrix-yo));
+    dist_mato = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+    tan_mat = (y_matrix-yf)./(x_matrix-xf);
+    ang_mat = atan(-(x_matrix-xo)./(y_matrix-yo));
   
-    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_matrixo > R　& x_matrix < xo; ％円弧状断層の下,footwall
+    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_mato > R　& x_matrix < xo; ％円弧状断層の下,footwall
 
     cond2 = x_matrix > xo & y_matrix < yo-R; %平坦断層の下,footwall
 
     cond3 = x_matrix > xo & y_matrix > yo-R; %直線断層剛体運動
 
-    cond4 = 0 =< ang_matrixo. =< phi & dist_matrixo. < R & y_matrix.<yo; %hanging wall, カーブ
+    cond4 = 0 =< ang_mato. <= phi & dist_mato. < R & y_matrix.<yo; %hanging wall, カーブ
 
-    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrix>0;
+    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat>0;
 
-    cond6 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_matrix<0;
+    cond6 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat<0;
 
-    cond7 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_matrix > 0;
+    cond7 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat > 0;
 
-    cond8 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_matrix < 0; %cond5~cond8 trishear zone
+    cond8 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat < 0; %cond5~cond8 trishear zone
 
     cond9 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5 & ~cond6 & ~cond7 & ~cond8; % hanging wall
 
-    xf = xf + ps * vx;
+    x_matrix(cond3) = x_matrix(cond3) - v;
+
+    x_matrix(cond4) = x_matrix(cond4) - v*cos(ang_mat(cond4));
+    y_matrix(cond4) = y_matrix(cond4) - v*sin(ang_mat(cond4));
+
+    x_matrix(cond5)=x_matrix(cond5)-vx*(tanb-tan(phi+atan(tan_mat(cond5))))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond5))))/(tan(a)+tam(b));
+    y_matrix(cond5)=y_matrix(cond5)+vy*(tanb-tan(phi+atan(tan_mat(cond5))))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond5))))/(tan(a)+tam(b));
+
+    x_matrix(cond6)=x_matrix(cond6)-vx*(tan(b)+tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b));   
+    y_matrix(cond6)=y_matrix(cond6)+vy*(tan(b)+tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b));
+
+    x_matrix(cond7)=x_matrix(cond7)-vx*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b));
+    y_matrix(cond7)=y_matrix(cond7)+vy*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))
+
+    x_matrix(cond8)=x_matrix(cond8)-vx*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
+    y_matrix(cond8)=y_matrix(cond8)+vy*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
+
+    x_matrix(cond9) = x_matrix(cond9) - vx;
+    y_matrix(cond9) = y_matrix(cond9) + vy;
+
+    xf = xf - ps * vx;
     yf = yf + ps * vy;
     phi = phi + v*ps/ R;
-    vx = -v * cos(phi);
+    vx = v * cos(phi);
     vy = v * sin(phi);
 end
