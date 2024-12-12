@@ -1,4 +1,4 @@
-num_bed=30:
+num_bed=30;
 
 x_range=-500:50:3000;
 
