@@ -1,7 +1,7 @@
 % 初期化
 closest_points = zeros(size(observed_points));
 ra = zeros(size(observed_points, 1), 1);
-Score = 1000;  
+Score = 500;  
 
 % 各観測点に対して処理
 for m = 1:length(X)
