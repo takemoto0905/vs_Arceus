@@ -1,11 +1,11 @@
 clear all;
 
 a = 50;
-b = 12;
-ps = 2.2;
-ramp=30;
-phif = 63;
-xo = 2800;
+b = 0;
+ps =3.4;
+ramp=75;
+phif = 84;
+xo = 2210;
 
 a = a * pi / 180;
 b = b * pi / 180;
@@ -23,7 +23,7 @@ displacement = R * phif/ps;
 xf = xo;
 yf = yo - R;
 v = displacement / time_steps;
-vx = -v;
+vx = v;
 vy = 0;
 
 pointset;
@@ -39,7 +39,7 @@ observed_points = [X, Y];
 figure;
 hold on;
 axis equal;
-axis([-1000 3000 -500 500]);
+axis([-1000 4000 -1500 1500]);
 grid on;
 xlabel('X軸(m)');
 ylabel('Y軸(m)');
@@ -52,47 +52,49 @@ trajectoryxf = zeros(1, time_steps);
 trajectoryyf = zeros(1, time_steps);
 
 for t = 1:time_steps
-    dist_mato = sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
+    dist_mato=sqrt((x_matrix - xo).^2 + (y_matrix - yo).^2);
     tan_mat = (y_matrix-yf)./(x_matrix-xf);
     ang_mat = atan(-(x_matrix-xo)./(y_matrix-yo));
+  
+    cond1= dist_mato >= R & x_matrix <= xo & x_matrix >xf & y_matrix<yo;%円弧状断層の下,footwall
 
-    cond1 = y_matrix <= tan(b-phi) .* (x_matrix - xf) + yf & dist_mato > R & x_matrix < xo; %円弧状断層の下,footwall
+    cond2= x_matrix<=xf & y_matrix <= tan(b-phi).* (x_matrix - xf) + yf; %trishear zone 下側,footwall
 
-    cond2 = x_matrix > xo & y_matrix < yo-R; %平坦断層の下,footwall
+    cond3 = x_matrix >= xo & y_matrix < yo-R; %平坦断層の下,footwall
 
-    cond3 = x_matrix > xo & y_matrix > yo-R; %直線断層剛体運動
+    cond4 = x_matrix > xo & y_matrix > yo-R; %直線断層剛体運動
 
-    cond4 = 0 <= ang_mat <= phi & dist_mato < R & y_matrix<yo; %hanging wall,カーブ
+    cond5 = 0 <= ang_mat & ang_mat <= phi & dist_mato < R & y_matrix<yo; %hanging wall, カーブ
 
-    cond5 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat>0;
+    cond6 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat>0;
 
-    cond6 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat<0;
+    cond7 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix < -tan(phi+a).*(x_matrix-xf)+yf & phi+a<pi/2 & tan_mat<0;
 
-    cond7 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat > 0;
+    cond8 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat > 0;
 
-    cond8 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat < 0; %cond5~cond8 trishear zone
+    cond9 = y_matrix > tan(b-phi) .* (x_matrix - xf) + yf & y_matrix > -tan(phi+a).*(x_matrix-xf)+yf & phi+a > pi/2 & tan_mat < 0; %cond6~cond9 trishear zone
 
-    cond9 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5 & ~cond6 & ~cond7 & ~cond8; % hanging wall
+    cond10 = ~cond1 & ~cond2 & ~cond3 & ~cond4 & ~cond5 & ~cond6 & ~cond7 & ~cond8; % hanging wall
 
-    x_matrix(cond3) = x_matrix(cond3) - v;
+    x_matrix(cond4) = x_matrix(cond4) - v;
 
-    x_matrix(cond4) = x_matrix(cond4) - v*cos(ang_mat(cond4));
-    y_matrix(cond4) = y_matrix(cond4) - v*sin(ang_mat(cond4));
+    x_matrix(cond5) = x_matrix(cond5) - v*cos(ang_mat(cond5));
+    y_matrix(cond5) = y_matrix(cond5) - v*sin(ang_mat(cond5));
 
-    x_matrix(cond5)=x_matrix(cond5)-vx*(tan(b)-tan(phi+atan(tan_mat(cond5))))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond5))))/(tan(a)+tan(b));
-    y_matrix(cond5)=y_matrix(cond5)+vy*(tan(b)-tan(phi+atan(tan_mat(cond5))))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond5))))/(tan(a)+tan(b));
+    x_matrix(cond6)=x_matrix(cond6)-vx*(tan(b)-tan(phi+atan(tan_mat(cond6))))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond6))))/(tan(a)+tan(b));
+    y_matrix(cond6)=y_matrix(cond6)+vy*(tan(b)-tan(phi+atan(tan_mat(cond6))))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)+tan(phi+atan(tan_mat(cond6))))/(tan(a)+tan(b));
 
-    x_matrix(cond6)=x_matrix(cond6)-vx*(tan(b)+tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b));   
-    y_matrix(cond6)=y_matrix(cond6)+vy*(tan(b)+tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond6))-phi))./(tan(a)+tan(b));
+    x_matrix(cond7)=x_matrix(cond7)-vx*(tan(b)+tan(atan(-tan_mat(cond7))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond7))-phi))./(tan(a)+tan(b));   
+    y_matrix(cond7)=y_matrix(cond7)+vy*(tan(b)+tan(atan(-tan_mat(cond7))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond7))-phi))./(tan(a)+tan(b));
 
-    x_matrix(cond7)=x_matrix(cond7)-vx*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b));
-    y_matrix(cond7)=y_matrix(cond7)+vy*(tan(b)+tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond7))))/(tan(a)+tan(b));
+    x_matrix(cond8)=x_matrix(cond8)-vx*(tan(b)+tan(pi-phi-atan(tan_mat(cond8))))/(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond8))))/(tan(a)+tan(b));
+    y_matrix(cond8)=y_matrix(cond8)+vy*(tan(b)+tan(pi-phi-atan(tan_mat(cond8))))/(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(pi-phi-atan(tan_mat(cond8))))/(tan(a)+tan(b));
 
-    x_matrix(cond8)=x_matrix(cond8)-vx*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
-    y_matrix(cond8)=y_matrix(cond8)+vy*(tan(b)+tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond8))-phi))./(tan(a)+tan(b));
+    x_matrix(cond9)=x_matrix(cond9)-vx*(tan(b)+tan(atan(-tan_mat(cond9))-phi))./(tan(a)+tan(b))-vy*tan(b)*(tan(a)-tan(atan(-tan_mat(cond9))-phi))./(tan(a)+tan(b));
+    y_matrix(cond9)=y_matrix(cond9)+vy*(tan(b)+tan(atan(-tan_mat(cond9))-phi))./(tan(a)+tan(b))-vx*tan(b)*(tan(a)-tan(atan(-tan_mat(cond9))-phi))./(tan(a)+tan(b));
 
-    x_matrix(cond9) = x_matrix(cond9) - vx;
-    y_matrix(cond9) = y_matrix(cond9) + vy;
+    x_matrix(cond10) = x_matrix(cond10) - vx;
+    y_matrix(cond10) = y_matrix(cond10) + vy;
 
     xf = xf - ps * vx;
     yf = yf + ps * vy;
@@ -112,6 +114,7 @@ for t = 1:time_steps
 
     % アニメーションを更新
     drawnow;
+    pause;
 end
 
 hold on;
