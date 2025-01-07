@@ -41,7 +41,7 @@ hold on;
 axis equal;
 axis([-1000 4000 -1500 1500]);
 grid on;
-xlabel('X軸(m)');
+xlabel('←N  X軸(m)');
 ylabel('Y軸(m)');
 title('Trishear listric model');
 
