@@ -1,11 +1,11 @@
 clear all;
 
-a = 25;
-b = 8;
-ps =3.4;
-ramp=51;
-phif = 57;
-xo = 1310;
+a = 30;
+b = 0;
+ps =3;
+ramp=54;
+phif = 60;
+xo = 3910;
 
 a = a * pi / 180;
 b = b * pi / 180;
